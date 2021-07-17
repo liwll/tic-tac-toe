@@ -1,0 +1,33 @@
+* {
+    font-family: 'Raleway', sans-serif;
+    color: #0f3fbd; 
+    background-color: #0d1117;
+}
+
+body {
+    font-size: 2vmin;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.board {
+    display: grid;
+    width: 36vh;
+    margin: 50px auto;
+    grid-template-columns: repeat(3, 12vh);
+}
+
+.square {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #30363d;
+    margin: -1px;
+    width: 12vh;
+    height: 12vh;
+    font-size: 3em;
+}
+
+.square:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+}
