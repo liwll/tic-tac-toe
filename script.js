@@ -32,7 +32,7 @@ const GameController = (() => {
         if (GameBoard.getBoard()[i] === 0) {
             GameBoard.placeX(i);
             console.log(GameBoard.getBoard());
-            console.log(GameController.turn++);
+            console.log(turn++);
             return true;
         }
     }
@@ -41,7 +41,7 @@ const GameController = (() => {
         if (GameBoard.getBoard()[i] === 0) {
             GameBoard.placeO(i);
             console.log(GameBoard.getBoard());
-            console.log(GameController.turn++);
+            console.log(turn++);
             return true;
         }
     }
@@ -77,12 +77,36 @@ const GameController = (() => {
             return true;
         }
     }
+    const handleClick = (square, i) => {
+        if (turn % 2 === 0) {
+            if (turnX(i)) {
+                square.textContent = 'X';
+                if (checkWinner()) {
+                    DisplayController.finishGame('X');
+                }
+            }
+        }
+        else {
+            if (turnO(i)) {
+                square.textContent = 'O';
+                if (checkWinner()) {
+                    DisplayController.finishGame('O');
+                }
+            }
+        }
+        if (turn === 9 && !checkWinner()) {
+            DisplayController.finishGame('Draw');
+            turn++;
+            isOver = true;
+        }
+    }
     return {
         turn, 
         turnX, 
         turnO, 
         isOver, 
-        checkWinner,
+        checkWinner, 
+        handleClick,
     }
 })();
 
@@ -94,27 +118,7 @@ const DisplayController = (() => {
             square.classList.add('square');
             square.dataset.index = i;
             square.addEventListener('click', () => {
-                if (GameController.turn % 2 === 0) {
-                    if (GameController.turnX(i)) {
-                        square.textContent = 'X';
-                        if (GameController.checkWinner()) {
-                            finishGame('X');
-                        }
-                    }
-                }
-                else {
-                    if (GameController.turnO(i)) {
-                        square.textContent = 'O';
-                        if (GameController.checkWinner()) {
-                            finishGame('O');
-                        }
-                    }
-                }
-                if (GameController.turn === 9 && !GameController.checkWinner()) {
-                    finishGame('Draw');
-                    GameController.turn++;
-                    GameController.isOver = true;
-                }
+                GameController.handleClick(square, i);
             });
             board.appendChild(square);
         }
@@ -126,7 +130,8 @@ const DisplayController = (() => {
         statusPanel.appendChild(winMessage);
     };
     return {
-        setup,
+        setup, 
+        finishGame, 
     };
 })();
 
