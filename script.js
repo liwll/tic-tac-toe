@@ -18,15 +18,18 @@ const GameBoard = (() => {
     };
 })();
 
-const Player = (name, symbol) => {
-    const getName = () => name;
-    const getSymbol = () => symbol;
-    return {getName, getSymbol};
-}
-
 const GameController = (() => {
     let turn = 0;
-    let isOver = false;
+    let isOver = true;
+    const getIsOver = () => {
+        return isOver;
+    }
+    const setIsOver = (newVal) => {
+        isOver = newVal;
+    }
+    const setTurn = (newTurn) => {
+        turn = newTurn;
+    }
     const turnX = (i) => {
         if (isOver) return false;
         if (GameBoard.getBoard()[i] === 0) {
@@ -52,6 +55,7 @@ const GameController = (() => {
             let rowSum = board[i] + board[i + 1] + board[i + 2];
             if (rowSum === 3 || rowSum === 15) {
                 isOver = true;
+                turn = 0;
                 return true;
             }
         }
@@ -60,6 +64,7 @@ const GameController = (() => {
             let columnSum = board[i] + board[i + 3] + board[i + 6];
             if (columnSum === 3 || columnSum === 15) {
                 isOver = true;
+                turn = 0;
                 return true;
             }
         }
@@ -70,10 +75,12 @@ const GameController = (() => {
 
         if (diagonalSumA === 3 || diagonalSumB === 3) {
             isOver = true;
+            turn = 0;
             return true;
         }
         if (diagonalSumA === 15 || diagonalSumB === 15) {
             isOver = true;
+            turn = 0;
             return true;
         }
     }
@@ -97,15 +104,13 @@ const GameController = (() => {
         if (turn === 9 && !checkWinner()) {
             DisplayController.finishGame('Draw');
             turn++;
-            isOver = true;
+            isOver = false;
         }
     }
     return {
-        turn, 
-        turnX, 
-        turnO, 
-        isOver, 
-        checkWinner, 
+        getIsOver,
+        setIsOver, 
+        setTurn, 
         handleClick,
     }
 })();
@@ -122,16 +127,35 @@ const DisplayController = (() => {
             });
             board.appendChild(square);
         }
+        const playBtn = document.querySelector('.play-btn');
+        playBtn.addEventListener('click', () => {
+            DisplayController.restart();
+            playBtn.textContent = 'Restart';
+        });
     }
     const finishGame = (winner) => {
         const statusPanel = document.querySelector('.status-panel');
         const winMessage = document.createElement('span');
+        winMessage.classList.add('win-msg');
         winMessage.textContent = (winner === 'Draw') ? 'It\'s a draw 😒' : `${winner} is the champion! 👑`;
         statusPanel.appendChild(winMessage);
     };
+    const restart = () => {
+        GameController.setIsOver(false);
+        GameController.setTurn(0);
+        GameBoard.clearBoard();
+
+        const gameSquares = document.querySelectorAll('.square');
+        gameSquares.forEach((square) => {
+            square.textContent = '';
+        });
+        const statusPanel = document.querySelector('.status-panel');
+        statusPanel.innerHTML = '';
+    }
     return {
         setup, 
         finishGame, 
+        restart, 
     };
 })();
 
